@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="style.css?v=wx2">
+  <link rel="stylesheet" href="style.css?v=wx3">
 </head>
 <body>
   <header class="topbar">
@@ -19,11 +19,18 @@
         <h2>Wood Swatch Configurator</h2>
       </div>
     </div>
+    <nav class="nav">
+      <a href="#configurator">Configurator</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#contact">Contact</a>
+    </nav>
     <button id="installBtn" class="btn ghost" hidden>Install App</button>
   </header>
 
   <section class="hero">
     <div class="hero-content container">
+      <span class="badge">Hand‑made in Texas</span>
       <h1 class="hero-title">Design your bow’s look</h1>
       <p class="hero-sub">Preview riser, limb, and overlay materials on real photos — Aquila, Praetorian, and Acies Triplex.</p>
       <a href="#configurator" class="btn primary">Start configuring</a>
@@ -117,9 +124,84 @@
     </section>
   </main>
 
-  <footer class="foot">
-    <div class="container">
-      <small>© Imperator Bow Company, Ltd. Co.</small>
+  <!-- Gallery -->
+  <section id="gallery" class="gallery container">
+    <h2 class="block-title">Gallery</h2>
+    <p class="block-sub">Recent builds and finish examples.</p>
+    <div class="grid gallery-grid">
+      <figure class="gcard">
+        <div class="ph ph1"></div>
+        <figcaption>Aquila • Kingwood & Osage</figcaption>
+      </figure>
+      <figure class="gcard">
+        <div class="ph ph2"></div>
+        <figcaption>Praetorian • Spalted Tamarind</figcaption>
+      </figure>
+      <figure class="gcard">
+        <div class="ph ph3"></div>
+        <figcaption>Acies Triplex • Desert Ironwood</figcaption>
+      </figure>
+      <figure class="gcard">
+        <div class="ph ph4"></div>
+        <figcaption>Aquila • Myrtle Burl</figcaption>
+      </figure>
+      <figure class="gcard">
+        <div class="ph ph5"></div>
+        <figcaption>Praetorian • Bocote</figcaption>
+      </figure>
+      <figure class="gcard">
+        <div class="ph ph6"></div>
+        <figcaption>Acies Triplex • FR‑4 Accents</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section id="testimonials" class="testimonials container">
+    <h2 class="block-title">What archers say</h2>
+    <div class="grid t-grid">
+      <blockquote class="tcard">
+        <p>“The Aquila points like a dream and the finish is flawless.”</p>
+        <footer>— J. Ramirez, TX</footer>
+      </blockquote>
+      <blockquote class="tcard">
+        <p>“My Praetorian is the smoothest longbow I’ve owned.”</p>
+        <footer>— A. Dunn, CO</footer>
+      </blockquote>
+      <blockquote class="tcard">
+        <p>“The Acies Triplex is perfect for travel—snaps together solid.”</p>
+        <footer>— S. Nguyen, WA</footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container cta-inner">
+      <h2>Ready to spec your build?</h2>
+      <p>Pick your materials now or reach out for unique woods and inlays.</p>
+      <div class="row">
+        <a href="#configurator" class="btn primary">Open Configurator</a>
+        <a href="#contact" class="btn">Contact</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Footer -->
+  <footer id="contact" class="foot">
+    <div class="container foot-inner">
+      <div>
+        <h3>Contact</h3>
+        <p>Email: <a href="mailto:imperatorbows@gmail.com">imperatorbows@gmail.com</a></p>
+        <p>Instagram: <a href="https://instagram.com/imperatorbows" target="_blank" rel="noopener">imperatorbows</a></p>
+      </div>
+      <div class="foot-brand">
+        <div class="coin sm"></div>
+        <div>
+          <strong>Imperator Bow Company, Ltd. Co.</strong><br>
+          Inspired by Rome. Crafted for mastery.
+        </div>
+      </div>
     </div>
   </footer>
 
