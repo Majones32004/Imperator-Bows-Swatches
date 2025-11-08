@@ -1,8 +1,8 @@
-/* Wix+ theme cache bump */
-const CACHE = "imperator-swatches-v45";
+/* Lead+Medallion patch cache bump */
+const CACHE = "imperator-swatches-v52";
 self.addEventListener("install", e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll([
-    "./","./index.html","./style.css","./app.js","./woods.json","./icons/icon-192.png","./icons/icon-512.png","./sample_aquila.jpg","./assets/hero-wave.svg","./service-worker.js"
+    "./","./index.html","./style.css","./service-worker.js","./icons/medallion-hero.png","./assets/hero-wave.svg"
   ])));
 });
 self.addEventListener("fetch", e=>{
