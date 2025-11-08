@@ -1,5 +1,5 @@
 /* Basic offline cache */
-const CACHE = "imperator-swatches-v3";
+const CACHE = "imperator-swatches-v10";
 const ASSETS = [
   "./",
   "./index.html",
