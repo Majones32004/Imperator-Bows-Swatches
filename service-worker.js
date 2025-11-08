@@ -1,22 +1,8 @@
-/* Medallion cache bump patch */
-const CACHE = "imperator-swatches-v30";  // bump
-const ASSETS = [
-  "./",
-  "./index.html",
-  "./style.css",
-  "./app.js",
-  "./woods.json",
-  "./manifest.webmanifest",
-  "./service-worker.js",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/medallion-v2.png",
-  "./sample_aquila.jpg"
-];
+/* Wix theme patch cache bump */
+const CACHE = "imperator-swatches-v41";
 self.addEventListener("install", e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(["./","./index.html","./style.css","./app.js","./woods.json","./icons/icon-192.png","./icons/icon-512.png","./sample_aquila.jpg","./assets/hero-wave.svg","./service-worker.js"])))
 });
-self.addEventListener("activate", e=>{ e.waitUntil(self.clients.claim()); });
 self.addEventListener("fetch", e=>{
   e.respondWith(caches.match(e.request).then(r=> r || fetch(e.request)));
 });
