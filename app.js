@@ -42,10 +42,9 @@ function makeSwatchButton(target, item){
   const btn = document.createElement("button");
   btn.title = item.name + " " + item.hex;
   btn.style.background = item.hex;
-  btn.style.boxShadow = "inset 0 0 0 2px #0003"
+  btn.style.boxShadow = "inset 0 0 0 2px #0003";
   btn.addEventListener("click", () => {
     current[target] = item;
-    activePart = target; // sync mask target
     updateLegend();
     drawPreview();
   });
@@ -251,223 +250,131 @@ document.addEventListener("DOMContentLoaded", async ()=>{
   el("#exportJSON").addEventListener("click", exportJSON);
   el("#importJSON").addEventListener("change", (e)=>{ if(e.target.files?.[0]) importJSON(e.target.files[0]); });
   el("#downloadPNG").addEventListener("click", downloadPNG);
-  el("#addSwatch").addEventListener("click", addSwatch);
 
+  // PWA install + SW
   setupInstall();
-
   if("serviceWorker" in navigator){
     try{ await navigator.serviceWorker.register("./service-worker.js"); }catch{}
   }
+
+  // Swatch data
   await loadData();
+
+  // Image mode controls
+  const radios = els('input[name="viewMode"]');
+  radios.forEach(r=>r.addEventListener("change", (e)=>{
+    const mode = e.target.value;
+    el("#imageControls").style.display = (mode==="image") ? "flex" : "none";
+    viewMode = mode;
+    drawPreview();
+  }));
+  el("#loadSample").addEventListener("click", ()=> loadSample());
+  el("#uploadPhoto").addEventListener("change", (e)=>{
+    const f = e.target.files?.[0]; if(!f) return;
+    const url = URL.createObjectURL(f);
+    const img = new Image();
+    img.onload = ()=>{ baseImage = img; resizeCanvasToImage(); computeAutoMasks(); drawPreview(); URL.revokeObjectURL(url); };
+    img.src = url;
+  });
 });
 
-// -- Image Preview / Masking --
-// Auto-masking for bundled Aquila sample (no painting required)
+// ---------- Image Preview (auto-mask) ----------
+let viewMode = "vector";
+let baseImage = null;
+const PARTS = ["riserGrip","riserBack","limbs","overlayRiser","overlayTip"];
+const masks = {}; // part -> canvas
+const maskCtxs = {};
+
+function initMasks(w,h){
+  PARTS.forEach(p=>{
+    const c = document.createElement("canvas");
+    c.width=w; c.height=h;
+    masks[p] = c; maskCtxs[p] = c.getContext("2d");
+  });
+}
+
+function resizeCanvasToImage(){
+  const c = el("#previewCanvas");
+  const maxW = 1200, maxH = 800;
+  let w = baseImage.width, h = baseImage.height;
+  const s = Math.min(maxW/w, maxH/h, 1.0);
+  w = Math.round(w*s); h = Math.round(h*s);
+  c.width = w; c.height = h;
+}
+
+function loadSample(){
+  const img = new Image();
+  img.onload = ()=>{ baseImage = img; resizeCanvasToImage(); computeAutoMasks(); drawPreview(); };
+  img.src = "./sample_aquila.jpg";
+}
+
 function computeAutoMasks(){
   if(!baseImage) return;
-  const W = preview.width, H = preview.height;
+  const W = el("#previewCanvas").width, H = el("#previewCanvas").height;
+  initMasks(W,H);
 
-  // Draw image to offscreen
   const off = document.createElement("canvas");
-  off.width = W; off.height = H;
+  off.width=W; off.height=H;
   const octx = off.getContext("2d");
   octx.drawImage(baseImage,0,0,W,H);
   const img = octx.getImageData(0,0,W,H);
   const data = img.data;
 
-  // Build a coarse "bow" mask by luminance threshold (background is light)
-  const bowMask = document.createElement("canvas");
-  bowMask.width = W; bowMask.height = H;
-  const bctx = bowMask.getContext("2d");
-  const bowImg = bctx.createImageData(W,H);
-  const bd = bowImg.data;
-
+  // Coarse bow mask: keep darker-than-backdrop pixels
+  const bow = document.createElement("canvas");
+  bow.width=W; bow.height=H;
+  const bctx = bow.getContext("2d");
+  const out = bctx.createImageData(W,H);
+  const od = out.data;
   for(let i=0;i<data.length;i+=4){
     const r=data[i], g=data[i+1], b=data[i+2], a=data[i+3];
-    // Perceived luminance
-    const y = 0.2126*r + 0.7152*g + 0.0722*b;
-    // Keep darker pixels as "bow"
-    const on = (y < 200 && a>0) ? 255 : 0;
-    bd[i] = 255; bd[i+1] = 255; bd[i+2] = 255; bd[i+3] = on; // white alpha
+    const y=0.2126*r+0.7152*g+0.0722*b;
+    const keep = (y<200 && a>0)?255:0;
+    od[i]=255; od[i+1]=255; od[i+2]=255; od[i+3]=keep;
   }
-  bctx.putImageData(bowImg,0,0);
+  bctx.putImageData(out,0,0);
 
-  // Helper: intersect a rectangular region with bowMask to make a part mask
   function rectMask(x0,y0,x1,y1){
     const c = document.createElement("canvas");
     c.width=W; c.height=H;
     const ctx = c.getContext("2d");
-    ctx.drawImage(bowMask,0,0);
-    ctx.globalCompositeOperation = "destination-in";
-    ctx.fillStyle = "#fff";
-    ctx.fillRect(x0,y0,x1-x0,y1-y0);
+    ctx.drawImage(bow,0,0);
+    ctx.globalCompositeOperation="destination-in";
+    ctx.fillStyle="#fff"; ctx.fillRect(x0,y0,x1-x0,y1-y0);
     return c;
   }
 
-  // Riser region roughly centered; tweak bands empirically for the sample photo
+  // Tuned boxes for the provided sample photo
   const riserBox = {x0: W*0.38, x1: W*0.62, y0: H*0.35, y1: H*0.72};
   const gripBox  = {x0: W*0.43, x1: W*0.57, y0: H*0.50, y1: H*0.62};
-
-  // Overlays bands (thin strips above/below riser block)
   const overlayTop = {x0: W*0.36, x1: W*0.64, y0: H*0.36, y1: H*0.41};
   const overlayBot = {x0: W*0.36, x1: W*0.64, y0: H*0.66, y1: H*0.71};
 
-  // Limbs = bow minus riser region (approximate by cutting a slightly larger box)
-  const limbMask = document.createElement("canvas");
-  limbMask.width=W; limbMask.height=H;
-  const lctx = limbMask.getContext("2d");
-  // Start with bow
-  lctx.drawImage(bowMask,0,0);
-  // Punch a hole where riser box sits (so limbs remain)
-  lctx.globalCompositeOperation = "destination-out";
-  lctx.fillStyle = "#fff";
+  // Limbs = bow minus riser rectangle
+  const limb = document.createElement("canvas");
+  limb.width=W; limb.height=H;
+  const lctx = limb.getContext("2d");
+  lctx.drawImage(bow,0,0);
+  lctx.globalCompositeOperation="destination-out";
+  lctx.fillStyle="#fff";
   lctx.fillRect(riserBox.x0, riserBox.y0, riserBox.x1-riserBox.x0, riserBox.y1-riserBox.y0);
 
-  // Tip overlays: small squares near the two limb ends (rough)
-  const tipMask = document.createElement("canvas");
-  tipMask.width=W; tipMask.height=H;
-  const tctx = tipMask.getContext("2d");
+  // Tips = small squares near visible limb ends, intersect with bow
+  const tip = document.createElement("canvas");
+  tip.width=W; tip.height=H;
+  const tctx = tip.getContext("2d");
   tctx.fillStyle="#fff";
-  // Upper right limb tip (as seen in the sample)
   tctx.fillRect(W*0.77, H*0.10, W*0.06, H*0.10);
-  // Lower left limb tip
   tctx.fillRect(W*0.10, H*0.78, W*0.08, H*0.10);
-  // Intersect with bow
   tctx.globalCompositeOperation="destination-in";
-  tctx.drawImage(bowMask,0,0);
+  tctx.drawImage(bow,0,0);
 
-  // Commit to masks
-  initMasks(W,H);
   maskCtxs["riserBack"].drawImage(rectMask(riserBox.x0, riserBox.y0, riserBox.x1, riserBox.y1),0,0);
   maskCtxs["riserGrip"].drawImage(rectMask(gripBox.x0, gripBox.y0, gripBox.x1, gripBox.y1),0,0);
   maskCtxs["overlayRiser"].drawImage(rectMask(overlayTop.x0, overlayTop.y0, overlayTop.x1, overlayTop.y1),0,0);
   maskCtxs["overlayRiser"].drawImage(rectMask(overlayBot.x0, overlayBot.y0, overlayBot.x1, overlayBot.y1),0,0);
-  maskCtxs["limbs"].drawImage(limbMask,0,0);
-  maskCtxs["overlayTip"].drawImage(tipMask,0,0);
-}
-
-// Hook auto-mask build when sample is loaded
-const _origLoadSample = document.getElementById("loadSample");
-if(_origLoadSample){
-  _origLoadSample.addEventListener("click", ()=>{
-    setTimeout(()=>{ if(baseImage) { computeAutoMasks(); drawPreview(); } }, 100);
-  });
-}
-
-let viewMode = "vector";
-let editingMask = false;
-let baseImage = null;
-const PARTS = ["riserGrip","riserBack","limbs","overlayRiser","overlayTip"];
-const masks = {};
-const maskCtxs = {};
-let activePart = "riserGrip";
-
-function initMasks(w=900,h=600){
-  PARTS.forEach(p=>{
-    const c = document.createElement("canvas");
-    c.width = w; c.height = h;
-    masks[p] = c;
-    maskCtxs[p] = c.getContext("2d");
-    maskCtxs[p].fillStyle = "#000";
-    maskCtxs[p].globalCompositeOperation = "source-over";
-  });
-}
-
-function setActivePartFromClick(key){ activePart = key; flashStatus("Mask target: " + labelFor(key)); }
-function labelFor(k){
-  return {riserGrip:"Riser — Grip",riserBack:"Riser — Back",limbs:"Limbs",overlayRiser:"Riser Overlays",overlayTip:"Tip Overlays"}[k]||k;
-}
-
-document.addEventListener("DOMContentLoaded", ()=>{
-  els(".picker").forEach(elm=>elm.addEventListener("click", ()=>{
-    const key = elm.getAttribute("data-target"); if(key) setActivePartFromClick(key);
-  }));
-
-  const radios = els('input[name="viewMode"]');
-  radios.forEach(r=>r.addEventListener("change",(e)=>{
-    viewMode = e.target.value;
-    el("#imageControls").style.display = (viewMode==="image") ? "flex" : "none";
-    drawPreview();
-  }));
-
-  el("#loadSample").addEventListener("click", ()=>{
-    const img = new Image();
-    img.onload = ()=>{ baseImage = img; resizeCanvasToImage(); initMasks(preview.width, preview.height); drawPreview(); flashStatus("Loaded sample image."); };
-    img.src = "./sample_aquila.jpg";
-  });
-
-  el("#uploadPhoto").addEventListener("change", (e)=>{
-    const f = e.target.files?.[0]; if(!f) return;
-    const url = URL.createObjectURL(f);
-    const img = new Image();
-    img.onload = ()=>{ baseImage = img; resizeCanvasToImage(); initMasks(preview.width, preview.height); if((img.src||"").includes("sample_aquila.jpg")) computeAutoMasks(); drawPreview(); URL.revokeObjectURL(url); flashStatus("Photo loaded."); };
-    img.src = url;
-  });
-
-  el("#toggleMask").addEventListener("click", ()=>{
-    if(!baseImage){ alert("Load a photo first."); return; }
-    editingMask = !editingMask;
-    el("#toggleMask").textContent = editingMask ? "Done Editing" : "Edit Masks";
-    el("#paintCanvas").style.pointerEvents = editingMask ? "auto" : "none";
-  });
-
-  el("#clearMask").addEventListener("click", ()=>{
-    const ctx = maskCtxs[activePart]; if(!ctx) return;
-    ctx.clearRect(0,0,ctx.canvas.width,ctx.canvas.height);
-    drawPreview();
-  });
-
-  el("#brushSize").addEventListener("input", ()=>{});
-
-  el("#saveMasks").addEventListener("click", ()=>{
-    const data = { w: preview.width, h: preview.height, parts: {} };
-    PARTS.forEach(p=> data.parts[p] = masks[p].toDataURL("image/png"));
-    localStorage.setItem("imperator-masks", JSON.stringify(data));
-    flashStatus("Masks saved to this device.");
-  });
-
-  el("#exportMasks").addEventListener("click", ()=>{
-    const data = { w: preview.width, h: preview.height, parts: {} };
-    PARTS.forEach(p=> data.parts[p] = masks[p].toDataURL("image/png"));
-    const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = "imperator_masks.json"; a.click();
-    URL.revokeObjectURL(url);
-  });
-
-  el("#importMasks").addEventListener("change", (e)=>{
-    const file = e.target.files?.[0]; if(!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-      try{
-        const data = JSON.parse(ev.target.result);
-        if(!data.w || !data.h || !data.parts) throw new Error("invalid");
-        initMasks(data.w, data.h);
-        const keys = Object.keys(data.parts);
-        let loaded = 0;
-        keys.forEach(p=>{
-          const img = new Image();
-          img.onload = ()=>{ maskCtxs[p].clearRect(0,0,data.w,data.h); maskCtxs[p].drawImage(img,0,0); loaded++; if(loaded===keys.length) drawPreview(); };
-          img.src = data.parts[p];
-        });
-        flashStatus("Masks imported.");
-      } catch { alert("Could not import masks."); }
-    };
-    reader.readAsText(file);
-  });
-
-  setupPainting();
-});
-
-function resizeCanvasToImage(){
-  const preview = el("#previewCanvas");
-  const paint = el("#paintCanvas");
-  const maxW = 1200, maxH = 800;
-  let w = baseImage.width, h = baseImage.height;
-  const s = Math.min(maxW/w, maxH/h, 1.0);
-  w = Math.round(w*s); h = Math.round(h*s);
-  preview.width = w; preview.height = h;
-  paint.width = w; paint.height = h;
+  maskCtxs["limbs"].drawImage(limb,0,0);
+  maskCtxs["overlayTip"].drawImage(tip,0,0);
 }
 
 function drawImagePreview(ctx){
@@ -476,6 +383,7 @@ function drawImagePreview(ctx){
   ctx.fillStyle = "#fff"; ctx.fillRect(0,0,W,H);
   if(baseImage){ ctx.drawImage(baseImage,0,0,W,H); }
   else { ctx.fillStyle="#666"; ctx.font="16px system-ui"; ctx.fillText("Load a bow photo to preview.", 16, 28); }
+
   const parts = [
     ["riserBack", current.riserBack],
     ["riserGrip", current.riserGrip],
@@ -483,35 +391,27 @@ function drawImagePreview(ctx){
     ["overlayRiser", current.overlayRiser],
     ["overlayTip", current.overlayTip],
   ];
-  
-  
+
   parts.forEach(([part, item])=>{
     const mask = masks[part]; if(!mask || !item) return;
-    // Build a tinted layer clipped by the mask (white = painted/kept)
     const tint = document.createElement("canvas");
     tint.width = W; tint.height = H;
     const tctx = tint.getContext("2d");
-    // fill with chosen color
     tctx.fillStyle = item.hex;
     tctx.fillRect(0,0,W,H);
-    // keep only masked area
-    tctx.globalCompositeOperation = "destination-in";
+    tctx.globalCompositeOperation = "destination-in"; // mask as alpha
     tctx.drawImage(mask,0,0);
-    // multiply the tint onto the base image
     ctx.save();
     ctx.globalAlpha = 0.9;
-    ctx.globalCompositeOperation = "multiply";
+    ctx.globalCompositeOperation = "multiply"; // keep grain/lighting
     ctx.drawImage(tint,0,0);
     ctx.restore();
   });
 }
 
-
-
-const preview = document.getElementById("previewCanvas");
-
 function drawPreview(){
-  const ctx = preview.getContext("2d");
+  const c = el("#previewCanvas");
+  const ctx = c.getContext("2d");
   if(viewMode==="image"){ drawImagePreview(ctx); }
   else {
     drawBowShape(ctx, {
@@ -522,28 +422,4 @@ function drawPreview(){
       overlayTip: current.overlayTip || { hex:"#777" }
     });
   }
-}
-
-function setupPainting(){
-  const paint = el("#paintCanvas");
-  const pc = paint.getContext("2d");
-  let painting = false;
-  function brush(){ return parseInt(el("#brushSize").value,10) || 30; }
-  function dot(x,y){
-    pc.fillStyle = "rgba(255,255,255,1)";
-    pc.beginPath(); pc.arc(x,y, brush()/2, 0, Math.PI*2); pc.fill();
-  }
-  function commit(){
-    const ctx = maskCtxs[activePart]; if(!ctx) return;
-    ctx.drawImage(paint,0,0);
-    pc.clearRect(0,0,paint.width,paint.height);
-  }
-  function pos(ev){
-    const r = paint.getBoundingClientRect();
-    return { x:(ev.clientX-r.left)*(paint.width/r.width), y:(ev.clientY-r.top)*(paint.height/r.height) };
-  }
-  paint.style.pointerEvents = "none";
-  paint.addEventListener("pointerdown", (e)=>{ if(!editingMask) return; painting=true; const p=pos(e); dot(p.x,p.y); });
-  paint.addEventListener("pointermove", (e)=>{ if(!editingMask || !painting) return; const p=pos(e); dot(p.x,p.y); });
-  window.addEventListener("pointerup", ()=>{ if(!editingMask || !painting) return; painting=false; commit(); drawPreview(); });
 }

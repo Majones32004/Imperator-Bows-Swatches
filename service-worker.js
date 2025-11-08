@@ -1,5 +1,5 @@
-/* Basic offline cache */
-const CACHE = "imperator-swatches-v11";
+/* Offline cache */
+const CACHE = "imperator-swatches-v10";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const ASSETS = [
   "./service-worker.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
+  "./icons/medallion.png",
   "./sample_aquila.jpg"
 ];
 
@@ -22,7 +23,5 @@ self.addEventListener("activate", e=>{
 });
 
 self.addEventListener("fetch", e=>{
-  e.respondWith(
-    caches.match(e.request).then(res => res || fetch(e.request))
-  );
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));
 });

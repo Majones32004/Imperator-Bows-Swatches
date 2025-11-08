@@ -8,12 +8,12 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="style.css">
-  <meta name="description" content="Choose wood swatches for bow models: riser (grip/back), limbs, riser overlays, tip overlays.">
+  <meta name="description" content="Preview wood swatches on real bow photos: riser (grip/back), limbs, riser overlays, tip overlays.">
 </head>
 <body>
   <header class="topbar">
     <div class="brand">
-      <div class="coin"></div>
+      <img class="coin" src="icons/medallion.png" alt="Imperator Bows medallion">
       <div class="titles">
         <h1>Imperator Bows</h1>
         <h2>Wood Swatch Configurator</h2>
@@ -83,27 +83,21 @@
         <button id="exportJSON">Export JSON</button>
         <input id="importJSON" type="file" accept="application/json">
       </div>
-      <p class="hint">Builds save to your device only (no cloud). Export to share.</p>
+      <p class="hint">Builds save to your device only. Export to share.</p>
     </section>
 
     <section class="preview">
       <div class="row">
         <label><input type="radio" name="viewMode" value="vector" checked> Vector Preview</label>
-        <label><input type="radio" name="viewMode" value="image"> Image Preview Mode</label><span class="hint" style="margin-left:8px">Auto‑masks for Aquila photo (no painting needed)</span>
+        <label><input type="radio" name="viewMode" value="image"> Image Preview Mode</label>
+        <span class="hint" style="margin-left:8px">Auto‑masks for Aquila photo (no painting)</span>
       </div>
       <div class="row" id="imageControls" style="display:none">
         <button id="loadSample">Load sample Aquila photo</button>
         <input id="uploadPhoto" type="file" accept="image/*">
-        <button id="toggleMask">Edit Masks</button>
-        <label>Brush <input id="brushSize" type="range" min="5" max="100" value="30"></label>
-        <button id="clearMask">Clear Current Mask</button>
-        <button id="saveMasks">Save Masks</button>
-        <button id="exportMasks">Export Masks</button>
-        <input id="importMasks" type="file" accept="application/json">
       </div>
       <div class="canvas-wrap" style="position:relative; width:100%;">
         <canvas id="previewCanvas" width="900" height="600" aria-label="Bow preview"></canvas>
-        <canvas id="paintCanvas" width="900" height="600" style="position:absolute;left:0;top:0;pointer-events:none;"></canvas>
       </div>
       <div class="row">
         <button id="downloadPNG">Download PNG Preview</button>
