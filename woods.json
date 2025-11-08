@@ -1,0 +1,164 @@
+{
+  "riserGrip": [
+    {
+      "name": "Kingwood (Camatillo)",
+      "hex": "#7C3F4A"
+    },
+    {
+      "name": "Osage Orange",
+      "hex": "#E2A400"
+    },
+    {
+      "name": "Spalted Tamarind (charcoal)",
+      "hex": "#8A7F7C"
+    },
+    {
+      "name": "Banksia Pod (stabilized)",
+      "hex": "#5A3B2E"
+    },
+    {
+      "name": "Bocote",
+      "hex": "#6B4A2D"
+    },
+    {
+      "name": "Cocobolo",
+      "hex": "#8C3B2E"
+    },
+    {
+      "name": "Desert Ironwood",
+      "hex": "#4B3328"
+    },
+    {
+      "name": "Mopane",
+      "hex": "#5E3B2C"
+    },
+    {
+      "name": "Myrtle Burl",
+      "hex": "#B89A77"
+    },
+    {
+      "name": "Buckeye Burl",
+      "hex": "#A9A69B"
+    },
+    {
+      "name": "Shedua (Ovangkol)",
+      "hex": "#6A4E2E"
+    },
+    {
+      "name": "Zebrawood",
+      "hex": "#A8895E"
+    }
+  ],
+  "riserBack": [
+    {
+      "name": "Kingwood (Camatillo)",
+      "hex": "#6E3A45"
+    },
+    {
+      "name": "Osage Orange",
+      "hex": "#D99B00"
+    },
+    {
+      "name": "Spalted Tamarind (light)",
+      "hex": "#B9B1AD"
+    },
+    {
+      "name": "Banksia Pod (stabilized)",
+      "hex": "#4A3127"
+    },
+    {
+      "name": "Bocote",
+      "hex": "#5E4228"
+    },
+    {
+      "name": "Cocobolo",
+      "hex": "#7C3428"
+    },
+    {
+      "name": "Desert Ironwood",
+      "hex": "#3F2C24"
+    },
+    {
+      "name": "Mopane",
+      "hex": "#523528"
+    },
+    {
+      "name": "Myrtle Burl",
+      "hex": "#A88E6E"
+    },
+    {
+      "name": "Buckeye Burl",
+      "hex": "#999690"
+    },
+    {
+      "name": "Shedua (Ovangkol)",
+      "hex": "#5E4528"
+    },
+    {
+      "name": "Zebrawood",
+      "hex": "#987E57"
+    }
+  ],
+  "limbs": [
+    {
+      "name": "Curly Maple \u2014 Charcoal Dyed",
+      "hex": "#4A4A4A"
+    },
+    {
+      "name": "Bamboo Core \u2014 Natural",
+      "hex": "#D7C38A"
+    },
+    {
+      "name": "Black Glass",
+      "hex": "#222222"
+    },
+    {
+      "name": "Clear Glass over Veneer",
+      "hex": "#CBBBA0"
+    },
+    {
+      "name": "Carbon Twill (visual)",
+      "hex": "#2A2B2E"
+    }
+  ],
+  "overlayRiser": [
+    {
+      "name": "Ebony (Black)",
+      "hex": "#1A1A1A"
+    },
+    {
+      "name": "FR\u20114/G\u201110 \u2014 OD Green",
+      "hex": "#3F4A3C"
+    },
+    {
+      "name": "FR\u20114/G\u201110 \u2014 Charcoal",
+      "hex": "#2E2E2E"
+    },
+    {
+      "name": "Horn (dark brown)",
+      "hex": "#3A2B20"
+    },
+    {
+      "name": "Micarta \u2014 Linen Brown",
+      "hex": "#6E5848"
+    }
+  ],
+  "overlayTip": [
+    {
+      "name": "Black Horn",
+      "hex": "#101010"
+    },
+    {
+      "name": "Ivory Micarta",
+      "hex": "#EDEAE2"
+    },
+    {
+      "name": "FR\u20114/G\u201110 \u2014 Gold Accent",
+      "hex": "#C6A664"
+    },
+    {
+      "name": "FR\u20114/G\u201110 \u2014 Tyrian Accent",
+      "hex": "#66023C"
+    }
+  ]
+}
