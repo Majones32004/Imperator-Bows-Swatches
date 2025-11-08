@@ -484,13 +484,14 @@ function drawImagePreview(ctx){
     ["overlayTip", current.overlayTip],
   ];
   
+  
   parts.forEach(([part, item])=>{
     const mask = masks[part]; if(!mask || !item) return;
-    // Build a tinted layer clipped by the mask (white = painted)
+    // Build a tinted layer clipped by the mask (white = painted/kept)
     const tint = document.createElement("canvas");
     tint.width = W; tint.height = H;
     const tctx = tint.getContext("2d");
-    // fill with color
+    // fill with chosen color
     tctx.fillStyle = item.hex;
     tctx.fillRect(0,0,W,H);
     // keep only masked area
@@ -498,12 +499,13 @@ function drawImagePreview(ctx){
     tctx.drawImage(mask,0,0);
     // multiply the tint onto the base image
     ctx.save();
-    ctx.globalAlpha = 0.85;
+    ctx.globalAlpha = 0.9;
     ctx.globalCompositeOperation = "multiply";
     ctx.drawImage(tint,0,0);
     ctx.restore();
   });
 }
+
 
 
 const preview = document.getElementById("previewCanvas");
