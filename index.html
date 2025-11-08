@@ -1,119 +1,20 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Imperator Bows — Wood Swatches</title>
-  <meta name="theme-color" content="#66023C">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="stylesheet" href="style.css">
-  <meta name="description" content="Preview wood swatches on real bow photos: riser (grip/back), limbs, riser overlays, tip overlays.">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imperator Bows — Wood Swatches</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <img class="coin" src="icons/medallion.png" alt="Imperator Bows medallion">
-      <div class="titles">
-        <h1>Imperator Bows</h1>
-        <h2>Wood Swatch Configurator</h2>
-      </div>
+<header class="topbar">
+  <div class="brand">
+    <img class="coin" src="icons/medallion.png?v=6" alt="Imperator Bows medallion">
+    <div class="titles">
+      <h1>Imperator Bows</h1>
+      <h2>Wood Swatch Configurator</h2>
     </div>
-    <button id="installBtn" class="ghost" hidden>Install App</button>
-  </header>
-
-  <main class="layout">
-    <section class="panel">
-      <h3>1) Bow Model</h3>
-      <div class="row">
-        <select id="modelSelect">
-          <option value="Aquila">Aquila — Compact Recurve</option>
-          <option value="Praetorian">Praetorian — Hybrid Longbow</option>
-          <option value="Acies Triplex">Acies Triplex — 3-Piece Recurve</option>
-        </select>
-      </div>
-
-      <h3>2) Choose Materials</h3>
-      <div class="swatch-grid">
-        <div class="swatch-block">
-          <h4>Riser — Grip</h4>
-          <div class="picker" data-target="riserGrip"></div>
-        </div>
-        <div class="swatch-block">
-          <h4>Riser — Back</h4>
-          <div class="picker" data-target="riserBack"></div>
-        </div>
-        <div class="swatch-block">
-          <h4>Limbs</h4>
-          <div class="picker" data-target="limbs"></div>
-        </div>
-        <div class="swatch-block">
-          <h4>Riser Overlays</h4>
-          <div class="picker" data-target="overlayRiser"></div>
-        </div>
-        <div class="swatch-block">
-          <h4>Tip Overlays</h4>
-          <div class="picker" data-target="overlayTip"></div>
-        </div>
-      </div>
-
-      <details class="customize">
-        <summary>Add your own swatch</summary>
-        <div class="add-form">
-          <input id="newName" placeholder="Wood/Material name (e.g., Bocote dark)">
-          <input id="newHex" placeholder="#RRGGBB">
-          <select id="newCategory">
-            <option value="riserGrip">Riser — Grip</option>
-            <option value="riserBack">Riser — Back</option>
-            <option value="limbs">Limbs</option>
-            <option value="overlayRiser">Riser Overlays</option>
-            <option value="overlayTip">Tip Overlays</option>
-          </select>
-          <button id="addSwatch">Add</button>
-        </div>
-      </details>
-
-      <h3>3) Save/Load</h3>
-      <div class="row">
-        <input id="buildName" placeholder="Build name (e.g., Aquila—Kingwood/Osage)">
-      </div>
-      <div class="row">
-        <button id="saveBuild">Save to device</button>
-        <button id="loadBuild">Load…</button>
-        <button id="exportJSON">Export JSON</button>
-        <input id="importJSON" type="file" accept="application/json">
-      </div>
-      <p class="hint">Builds save to your device only. Export to share.</p>
-    </section>
-
-    <section class="preview">
-      <div class="row">
-        <label><input type="radio" name="viewMode" value="vector" checked> Vector Preview</label>
-        <label><input type="radio" name="viewMode" value="image"> Image Preview Mode</label>
-        <span class="hint" style="margin-left:8px">Auto‑masks for Aquila photo (no painting)</span>
-      </div>
-      <div class="row" id="imageControls" style="display:none">
-        <button id="loadSample">Load sample Aquila photo</button>
-        <input id="uploadPhoto" type="file" accept="image/*">
-      </div>
-      <div class="canvas-wrap" style="position:relative; width:100%;">
-        <canvas id="previewCanvas" width="900" height="600" aria-label="Bow preview"></canvas>
-      </div>
-      <div class="row">
-        <button id="downloadPNG">Download PNG Preview</button>
-        <span class="status" id="statusMsg" role="status" aria-live="polite"></span>
-      </div>
-      <details>
-        <summary>Legend</summary>
-        <ul class="legend" id="legendList"></ul>
-      </details>
-    </section>
-  </main>
-
-  <footer class="foot">
-    <small>© Imperator Bow Company, Ltd. Co. • Tyrian Purple theme • Works offline</small>
-  </footer>
-
-  <script src="app.js"></script>
+  </div>
+</header>
 </body>
 </html>
