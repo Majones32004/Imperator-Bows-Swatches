@@ -29,7 +29,7 @@
         <select id="modelSelect">
           <option value="Aquila">Aquila — Compact Recurve</option>
           <option value="Praetorian">Praetorian — Hybrid Longbow</option>
-          <option value="Acies Triplex">Acies Triplex — 3‑Piece Recurve</option>
+          <option value="Acies Triplex">Acies Triplex — 3-Piece Recurve</option>
         </select>
       </div>
 
@@ -87,7 +87,24 @@
     </section>
 
     <section class="preview">
-      <canvas id="previewCanvas" width="900" height="600" aria-label="Bow preview"></canvas>
+      <div class="row">
+        <label><input type="radio" name="viewMode" value="vector" checked> Vector Preview</label>
+        <label><input type="radio" name="viewMode" value="image"> Image Preview Mode</label>
+      </div>
+      <div class="row" id="imageControls" style="display:none">
+        <button id="loadSample">Load sample Aquila photo</button>
+        <input id="uploadPhoto" type="file" accept="image/*">
+        <button id="toggleMask">Edit Masks</button>
+        <label>Brush <input id="brushSize" type="range" min="5" max="100" value="30"></label>
+        <button id="clearMask">Clear Current Mask</button>
+        <button id="saveMasks">Save Masks</button>
+        <button id="exportMasks">Export Masks</button>
+        <input id="importMasks" type="file" accept="application/json">
+      </div>
+      <div class="canvas-wrap" style="position:relative; width:100%;">
+        <canvas id="previewCanvas" width="900" height="600" aria-label="Bow preview"></canvas>
+        <canvas id="paintCanvas" width="900" height="600" style="position:absolute;left:0;top:0;pointer-events:none;"></canvas>
+      </div>
       <div class="row">
         <button id="downloadPNG">Download PNG Preview</button>
         <span class="status" id="statusMsg" role="status" aria-live="polite"></span>

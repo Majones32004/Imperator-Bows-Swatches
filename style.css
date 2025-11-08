@@ -90,6 +90,7 @@ body{
   display:flex; flex-direction:column; gap:12px;
 }
 
+.canvas-wrap{border-radius:12px; overflow:hidden;}
 #previewCanvas{
   width:100%; height:auto; border-radius:12px; border:1px solid #eee; background:#fff;
 }

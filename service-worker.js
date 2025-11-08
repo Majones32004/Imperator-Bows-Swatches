@@ -1,5 +1,5 @@
 /* Basic offline cache */
-const CACHE = "imperator-swatches-v1";
+const CACHE = "imperator-swatches-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,8 +7,10 @@ const ASSETS = [
   "./app.js",
   "./woods.json",
   "./manifest.webmanifest",
+  "./service-worker.js",
   "./icons/icon-192.png",
-  "./icons/icon-512.png"
+  "./icons/icon-512.png",
+  "./sample_aquila.jpg"
 ];
 
 self.addEventListener("install", e=>{
